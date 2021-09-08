@@ -2,13 +2,16 @@ const User = require('../model/user');
 const bcryptjs = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
-class Auth{
-    
-    static Login(req, res) {
-        const email = req.body.email;
-        const password = req.body.password;
+class Auth {
 
-        if (!email || !password) res.status(400).send({ error: { description: "All input is required" } });
+    constructor(app) {
+        this._app = app;
+    }
+
+    static async Login(req, res) {
+        const { email, password } = req.body;
+
+        if (!email || !password) return res.status(400).send({ error: { description: "All input is required" } });
 
         const user = await User.findOne({ email });
         const verifyPassword = await bcryptjs.compare(password, user.password);
@@ -21,9 +24,8 @@ class Auth{
 
             user.token = token;
 
-            console.log();
-            res.status(200).json(user.token);
-        } else res.status(400).send({ error: { description: "Invalid param" } });
+            return res.status(200).json(user.token);
+        } else return res.status(400).send({ error: { description: "Invalid param" } });
     }
 }
 

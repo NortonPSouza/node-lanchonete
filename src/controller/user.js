@@ -17,7 +17,13 @@ router.post('/user/register', Authorization, async (req, res) => {
 
     const encryptedPassword = await bcryptjs.hash(password, 10);
 
-     
+    await User.create({
+        name,
+        email,
+        password: encryptedPassword,
+    });
+
+    res.status(201).json('user created');
 });
 
 router.get('/user/list', Authorization, (req, res) => {
