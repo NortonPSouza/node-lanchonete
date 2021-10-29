@@ -4,7 +4,7 @@ const router = express.Router();
 const bcryptjs = require('bcryptjs');
 const Authorization = require('../services/verifyToken');
 
-router.post('/user/register', Authorization, async (req, res) => {
+router.post('/user/register', async (req, res) => {
     const { email, password, name } = req.body;
 
     if (!(email && password && name)) {
