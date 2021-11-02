@@ -8,17 +8,17 @@ class Auth {
         this._app = app;
     }
 
-    static async Login(req, res) {       
+    static async Login(req, res) {
         let verifyPassword = '';
         const { email, password } = req.body;
 
         if (!email || !password) return res.status(400).send({ error: { description: "All input is required" } });
-        
-        const user = await User.findOne({ email });
 
+        const user = await User.findOne({ email });
+        
         if (user) verifyPassword = await bcryptjs.compare(password, user.password);
         else return res.status(404).send({ error: { description: "User not found" } });
-
+        
         if (user && verifyPassword) {
             const token = {
                 access_token: jwt.sign({ user_id: user._id, email }, process.env.TOKEN_KEY, { expiresIn: "1h", }),

@@ -1,4 +1,3 @@
-const express = require('express');
 const User = require('../model/user');
 const bcryptjs = require('bcryptjs');
 
@@ -63,7 +62,7 @@ class Users {
             User.findOneAndUpdate({ _id: req.params.id }, req.body, (err, data) => {
                 if (err) res.send(err);
                 data.modifyAt = new Date();
-                res.send(data);
+                return res.status(200).send('User updated successfully');
             });
         }
     }
