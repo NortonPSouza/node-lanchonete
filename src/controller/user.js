@@ -1,5 +1,6 @@
 const User = require('../model/user');
 const bcryptjs = require('bcryptjs');
+const MySQL = require('../database/mysql');
 
 class Users {
 
