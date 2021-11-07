@@ -9,25 +9,36 @@ class Users {
     }
 
     static async Register(req, res) {
-        const { email, password, name } = req.body;
+        const { cpf, full_name, email, password, phone_number } = req.body;
 
-        if (!(email && password && name)) {
+        if (!(cpf && full_name && email && password && phone_number)) {
             return res.status(400).send("All input is required");
         }
 
-        await User.findOne({ email }, (err, user) => {
-            if (user) return res.status(409).send("User Already Exist.");
+        const isUser = `SELECT cpf, email FROM lanchonete.user WHERE email = '${await bcryptjs.hash(email, 10)}' AND cpf = '${await bcryptjs.hash(cpf, 10)}';`;
+
+        new Promise((resolve, reject) => {
+            MySQL.query(isUser, (err, result) => {
+                if (err) {
+                    res.status(500);
+                    throw err;
+                }
+                if (result.length > 0) return res.status(409).send("User Already Exist.");
+                resolve();
+            })
+        }).then(async () => {
+            const _cpf = await bcryptjs.hash(cpf, 10);
+            const _email = await bcryptjs.hash(email, 10);
+            const _password = await bcryptjs.hash(password, 10);
+
+            //to do: criar um login pra inserir na tabela e depois crirar um usuario
+
+            const registerUser = `INSERT INTO lanchonete.user (cpf, full_name, email, password, phone_number) VALUES ('${_cpf}', '${full_name}', '${_email}', '${_password}', '${phone_number}');`;
+            MySQL.query(registerUser, (err, results) => {
+                if (err) return res.status(400).send({ err });
+                return res.status(201).send({ success: `sucesso ao criar usuario de login`, status: results });
+            });
         });
-
-        const encryptedPassword = await bcryptjs.hash(password, 10);
-
-        await User.create({
-            name,
-            email,
-            password: encryptedPassword,
-        });
-
-        res.status(201).json('user created');
     }
 
     static async List(req, res) {
