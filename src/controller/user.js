@@ -8,6 +8,8 @@ class Users {
         this._app = app;
     }
 
+
+    
     static async Register(req, res) {
         const { cpf, full_name, email, password, phone_number } = req.body;
 
