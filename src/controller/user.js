@@ -1,6 +1,6 @@
 const User = require('../model/user');
-const bcryptjs = require('bcryptjs');
 const MySQL = require('../database/mysql');
+const Crypt = require('../utils/crypt');
 
 class Users {
 
@@ -8,39 +8,42 @@ class Users {
         this._app = app;
     }
 
-
-    
-    static async Register(req, res) {
+    static Register(req, res) {
         const { cpf, full_name, email, password, phone_number } = req.body;
 
         if (!(cpf && full_name && email && password && phone_number)) {
-            return res.status(400).send("All input is required");
+            return res.status(400).send({ error: { description: "All input is required" } });
         }
 
-        const isUser = `SELECT cpf, email FROM lanchonete.user WHERE email = '${await bcryptjs.hash(email, 10)}' AND cpf = '${await bcryptjs.hash(cpf, 10)}';`;
+        const _cpf = Crypt.encrypt(cpf);
+        const _email = Crypt.encrypt(email);
+        const _password = Crypt.encrypt(password);
 
         new Promise((resolve, reject) => {
+            const isUser = `SELECT cpf,email FROM lanchonete.user WHERE cpf='${_cpf}' AND email='${_email}';`;
             MySQL.query(isUser, (err, result) => {
-                if (err) {
-                    res.status(500);
-                    throw err;
+                if (err) return res.status(500).send({ err });
+                if (result.length > 0) {
+                    return res.status(409).send({ error: { description: "User Already Exist" } });
                 }
-                if (result.length > 0) return res.status(409).send("User Already Exist.");
                 resolve();
-            })
-        }).then(async () => {
-            const _cpf = await bcryptjs.hash(cpf, 10);
-            const _email = await bcryptjs.hash(email, 10);
-            const _password = await bcryptjs.hash(password, 10);
-
-            //to do: criar um login pra inserir na tabela e depois crirar um usuario
-
-            const registerUser = `INSERT INTO lanchonete.user (cpf, full_name, email, password, phone_number) VALUES ('${_cpf}', '${full_name}', '${_email}', '${_password}', '${phone_number}');`;
-            MySQL.query(registerUser, (err, results) => {
-                if (err) return res.status(400).send({ err });
-                return res.status(201).send({ success: `sucesso ao criar usuario de login`, status: results });
             });
-        });
+        })
+            .then(() => {
+                const registerLogin = `INSERT INTO lanchonete.login (email, password) VALUES ('${_email}', '${_password}');`;
+                MySQL.query(registerLogin, (err, results) => {
+                    if (err) return res.status(500).send({ err });
+                });
+            })
+            .then(() => {
+                const registerUser = `INSERT INTO lanchonete.user (cpf, full_name, email, password, phone_number) VALUES ('${_cpf}', '${full_name}', '${_email}', '${_password}', '${phone_number}');`;
+
+                MySQL.query(registerUser, (err, results) => {
+                    if (err) return res.status(400).send({ err });
+                    return res.status(201).send({ success: { description: 'User created successfully' } });
+                });
+            })
+            .catch(err => res.send({ err }))
     }
 
     static async List(req, res) {
