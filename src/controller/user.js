@@ -1,7 +1,5 @@
-const User = require('../model/user');
 const MySQL = require('../database/mysql');
 const Crypt = require('../utils/crypt');
-
 class Users {
 
     constructor(app) {
