@@ -6,7 +6,7 @@ class Users {
         this._app = app;
     }
 
-    static Register(req, res) {
+    static register(req, res) {
         const { cpf, full_name, email, password, phone_number } = req.body;
 
         if (!(cpf && full_name && email && password && phone_number)) {
@@ -18,8 +18,8 @@ class Users {
         const _password = Crypt.encrypt(password);
 
         new Promise((resolve, reject) => {
-            const isUser = `SELECT cpf,email FROM lanchonete.user WHERE cpf='${_cpf}' AND email='${_email}';`;
-            MySQL.query(isUser, (err, result) => {
+            const userExists = `SELECT cpf,email FROM lanchonete.user WHERE cpf='${_cpf}' AND email='${_email}';`;
+            MySQL.query(userExists, (err, result) => {
                 if (err) return res.status(500).send({ err });
                 if (result.length) {
                     return res.status(409).send({ error: { description: "Email or cpf Already Exist" } });
@@ -44,7 +44,7 @@ class Users {
             .catch(err => res.send({ err }))
     }
 
-    static List(req, res) {
+    static list(req, res) {
         const listUsers = "SELECT * FROM lanchonete.user";
         MySQL.query(listUsers, (err, results) => {
             if (err) return res.status(400).send({ err });
@@ -60,7 +60,7 @@ class Users {
         });
     }
 
-    static ListUser(req, res) {
+    static user(req, res) {
         if (!req.params.id) return res.status(400).send({ error: { description: 'ID invalid' } });
         const listUsers = `SELECT * FROM lanchonete.user WHERE id_user='${req.params.id}'`;
         MySQL.query(listUsers, (err, results) => {
@@ -77,30 +77,50 @@ class Users {
         });
     }
 
-    static UpdateUser(req, res) {
-        if (!req.body.name || !req.body.email || !req.body.password)
+    static updateUser(req, res) {
+        const { id } = req.params;
+        const { full_name, email, password, phone_number } = req.body;
+
+        if (!full_name || !email || !password || !phone_number)
             res.status(400).send({ error: { status: 'Param invalid' } });
         else {
-            User.findOneAndUpdate({ _id: req.params.id }, req.body, (err, data) => {
-                if (err) res.send(err);
-                data.modifyAt = new Date();
-                return res.status(200).send('User updated successfully');
+            const _email = Crypt.encrypt(email);
+            const _password = Crypt.encrypt(password);
+
+            const emailExist = `SELECT email lanchonete.user WHERE email = '${_email}';`;
+            MySQL.query(emailExist, (err, result) => {
+                if (err) return res.status(400).send({ err });
+                if (!result.length) {
+                    const updateUser = `UPDATE lanchonete.user SET full_name='${full_name}', email='${_email}', password='${_password}' WHERE id_user=${id};`;
+                    MySQL.query(updateUser, (err, result) => {
+                        if (err) return res.status(400).send({ err });
+                        if (result.affectedRows) return res.status(200).send({ success: { description: 'User updated successfully' } });
+                    });
+                };
             });
         }
     }
 
-    static UpdatePassword(req, res) {
-        if (!req.body.password)
+    static updatePassword(req, res) {
+        const { id } = req.params;
+        const { password } = req.body;
+
+        if (!password)
             res.status(400).send({ error: { status: 'Param invalid' } });
         else {
-            User.findOneAndUpdate({ _id: req.params.id }, req.body.password, (err, data) => {
-                if (err) res.send(err);
-                res.send(data);
+            const _password = Crypt.encrypt(password);
+
+            const updatePassword = `UPDATE lanchonete.user SET password='${_password}' WHERE id_user=${id};`
+            MySQL.query(updatePassword, (err, result) => {
+                if (err)
+                    return res.status(400).send({ err });
+                if (result.affectedRows)
+                    return res.status(200).send({ success: { description: 'Password updated successfully' } });
             });
         }
     }
 
-    static DeleteUser(req, res) {
+    static deleteUser(req, res) {
         if (!req.params.id) return res.status(400).send({ error: { description: 'ID invalid' } });
         let email = '';
         const user = `SELECT email FROM lanchonete.user WHERE id_user='${req.params.id}'`;
@@ -115,7 +135,7 @@ class Users {
                 MySQL.query(delelteLogin, (err, result) =>
                     res.status(201).send({ success: { description: 'User deleted successfully' } })
                 );
-    }
+            }
             else return res.status(404).send({ error: { description: 'Not Found' } });
         });
     }

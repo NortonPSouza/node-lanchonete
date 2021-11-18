@@ -5,12 +5,12 @@ const Users = require('../controller/user');
 const Authorization = require('../services/verifyToken');
 
 router
-    .post('/auth', Auth.Login)
-    .post('/user/register', Users.Register)
-    .get('/user/list', Authorization, Users.List)
-    .get('/user/:id', Authorization, Users.ListUser)
-    .delete('/user/:id', Authorization, Users.DeleteUser)
-    .put('/user/update/:id', Authorization, Users.UpdateUser)
-    .patch('/user/update/password/:id', Authorization, Users.UpdatePassword)
+    .post('/auth', Auth.login)
+    .post('/user/register', Users.register)
+    .get('/user/list', Authorization, Users.list)
+    .get('/user/:id', Authorization, Users.user)
+    .delete('/user/:id', Authorization, Users.deleteUser)
+    .put('/user/update/:id', Authorization, Users.updateUser)
+    .patch('/user/update/password/:id', Authorization, Users.updatePassword)
 
 module.exports = router;

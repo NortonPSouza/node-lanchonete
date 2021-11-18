@@ -8,7 +8,7 @@ class Auth {
         this._app = app;
     }
 
-    static Login(req, res) {
+    static login(req, res) {
         const { email, password } = req.body;
 
         if (!email || !password) return res.status(400).send({ error: { description: "All input is required" } });
@@ -19,7 +19,7 @@ class Auth {
         const isLogin = `SELECT * FROM lanchonete.login WHERE password='${_password}' AND email='${_email}';`;
         MySQL.query(isLogin, (err, result) => {
             if (err) return res.status(500).send({ err });
-            if (result.length > 0) {
+            if (result.length) {
                 const id = result[0].id_login;
                 const expires_in = 3600;
                 const access_token = jwt.sign({ id }, process.env.TOKEN_KEY, { expiresIn: '1h' });
