@@ -1,6 +1,6 @@
 const MySQL = require('../database/mysql');
 const Crypt = require('../utils/crypt');
-class Users {
+class UserController {
 
     constructor(app) {
         this._app = app;
@@ -44,7 +44,7 @@ class Users {
             .catch(err => res.send({ err }))
     }
 
-    static list(req, res) {
+    static listAll(req, res) {
         const listUsers = "SELECT * FROM lanchonete.user";
         MySQL.query(listUsers, (err, results) => {
             if (err) return res.status(400).send({ err });
@@ -60,7 +60,7 @@ class Users {
         });
     }
 
-    static user(req, res) {
+    static listOne(req, res) {
         if (!req.params.id) return res.status(400).send({ error: { description: 'ID invalid' } });
         const listUsers = `SELECT * FROM lanchonete.user WHERE id_user='${req.params.id}'`;
         MySQL.query(listUsers, (err, results) => {
@@ -141,4 +141,4 @@ class Users {
     }
 }
 
-module.exports = Users;
+module.exports = UserController;

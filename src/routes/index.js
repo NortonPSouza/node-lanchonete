@@ -1,16 +1,16 @@
 const express = require('express');
 const router = express.Router();
 const Auth = require('../controller/auth');
-const Users = require('../controller/user');
+const UserController = require('../controller/user');
 const Authorization = require('../services/verifyToken');
 
 router
     .post('/auth', Auth.login)
-    .post('/user/register', Users.register)
-    .get('/user/list', Authorization, Users.list)
-    .get('/user/:id', Authorization, Users.user)
-    .delete('/user/:id', Authorization, Users.deleteUser)
-    .put('/user/update/:id', Authorization, Users.updateUser)
-    .patch('/user/update/password/:id', Authorization, Users.updatePassword)
+    .post('/user/register', UserController.register)
+    .get('/user/list', Authorization, UserController.listAll)
+    .get('/user/:id', Authorization, UserController.listOne)
+    .delete('/user/:id', Authorization, UserController.deleteUser)
+    .put('/user/update/:id', Authorization, UserController.updateUser)
+    .patch('/user/update/password/:id', Authorization, UserController.updatePassword)
 
 module.exports = router;
