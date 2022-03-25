@@ -9,7 +9,6 @@ const port = process.env.PORT || API_PORT;
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-require('./controller/user');
 
 app.use('/api/v1', router)
 

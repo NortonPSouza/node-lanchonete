@@ -1,5 +1,5 @@
 const MySQL = require('../database/mysql');
-const Crypt = require('../utils/crypt');
+const Crypt = require('../services/crypt');
 class UserController {
 
     constructor(app) {
