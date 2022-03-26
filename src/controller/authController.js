@@ -1,4 +1,4 @@
-const AuthModel = require('../model/auth');
+const AuthModel = require('../model/authModel');
 class AuthController {
 
     constructor(app) {
