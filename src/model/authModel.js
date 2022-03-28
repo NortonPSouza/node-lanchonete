@@ -6,7 +6,7 @@ const jwt = require('jsonwebtoken');
 class AuthModel {
 
     static login(email, password) {
-        new Promise((resolve, reject) => {
+        return new Promise((resolve, reject) => {
             const _email = Crypt.encrypt(email);
             const _password = Crypt.encrypt(password);
 
