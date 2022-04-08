@@ -16,31 +16,31 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table structure for table `login`
+-- Table structure for table `token`
 --
 
-DROP TABLE IF EXISTS `login`;
+DROP TABLE IF EXISTS `token`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `login` (
-  `id_login` int NOT NULL,
-  `email` varchar(150) DEFAULT NULL,
-  `password` varchar(150) DEFAULT NULL,
-  `recuperation_code` int DEFAULT NULL,
-  PRIMARY KEY (`id_login`),
-  UNIQUE KEY `id_login_UNIQUE` (`id_login`),
-  UNIQUE KEY `email_UNIQUE` (`email`),
-  CONSTRAINT `fk_login_1` FOREIGN KEY (`id_login`) REFERENCES `user` (`id_user`) ON DELETE CASCADE ON UPDATE RESTRICT
+CREATE TABLE `token` (
+  `id_token` int NOT NULL,
+  `token` varchar(600) DEFAULT NULL,
+  `expires_in` int DEFAULT NULL,
+  PRIMARY KEY (`id_token`),
+  UNIQUE KEY `id_token_UNIQUE` (`id_token`),
+  UNIQUE KEY `token_UNIQUE` (`token`),
+  UNIQUE KEY `expires_in_UNIQUE` (`expires_in`),
+  CONSTRAINT `fk_new_table_1` FOREIGN KEY (`id_token`) REFERENCES `user` (`id_user`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `login`
+-- Dumping data for table `token`
 --
 
-LOCK TABLES `login` WRITE;
-/*!40000 ALTER TABLE `login` DISABLE KEYS */;
-/*!40000 ALTER TABLE `login` ENABLE KEYS */;
+LOCK TABLES `token` WRITE;
+/*!40000 ALTER TABLE `token` DISABLE KEYS */;
+/*!40000 ALTER TABLE `token` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 

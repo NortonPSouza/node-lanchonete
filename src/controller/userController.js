@@ -7,13 +7,13 @@ class UserController {
     }
 
     static register(req, res) {
-        const { cpf, full_name, email, password, phone_number } = req.body;
+        const { cpf, name, email, password, phone } = req.body;
 
-        if (!(cpf && full_name && email && password && phone_number)) {
+        if (!(cpf && name && email && password && phone)) {
             return res.status(400).send("All input is required");
         }
 
-        UserModel.register(cpf, full_name, email, password, phone_number)
+        UserModel.register(cpf, name, email, password, phone)
             .then(({ status_code, result }) => res.status(status_code).send(result))
             .catch(({ status_code, result }) => res.status(status_code).send(result))
     }

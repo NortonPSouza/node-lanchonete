@@ -3,30 +3,40 @@ const Crypt = require('../services/crypt');
 
 class UserModel {
 
-    static register(cpf, full_name, email, password, phone_number) {
-        const _cpf = Crypt.encrypt(cpf);
-        const _email = Crypt.encrypt(email);
+    static register(cpf, name, email, password, phone) {
         const _password = Crypt.encrypt(password);
 
         return new Promise((resolve, reject) => {
-            const userQuery = `SELECT cpf,email FROM lanchonete.user WHERE cpf='${_cpf}' AND email='${_email}';`;
+            const userQuery = `
+                SELECT u.cpf 
+                FROM user AS u
+                INNER JOIN  login AS l ON u.id = l.id_user
+                WHERE u.cpf='${cpf}' OR l.email='${email}';
+            `;
             MySQL.query(userQuery, (err, result) => {
                 if (err) return reject({ status_code: 400, result: err });
                 if (result.length) {
-                    reject({ status_code: 409, result: "Email or cpf Already Exist" });
+                    return reject({ status_code: 409, result: "User Already Exist" });
                 }
             });
 
-            const registerLogin = `INSERT INTO lanchonete.login (email, password) VALUES ('${_email}', '${_password}');`;
-            MySQL.query(registerLogin, (err, results) => {
-                if (err) return reject({ status_code: 500, result: err });
+            const registerUser = `
+                INSERT INTO user (cpf, name, phone) 
+                VALUES ('${cpf}', '${name}', '${phone}');
+            `;
+            MySQL.query(registerUser, (err, result) => {
+                if (err) return reject({ status_code: 400, result: err });
+                const registerLogin = `
+                    INSERT INTO login (id_user, email, password) 
+                    VALUES ('${result.insertId}','${email}', '${_password}');
+                `;
+                MySQL.query(registerLogin, (err, result) => {
+                    if (err) return reject({ status_code: 400, result: err });
+                    resolve({ status_code: 204, result: "User created successfully" });
+                });
             });
 
-            const registerUser = `INSERT INTO lanchonete.user (cpf, full_name, email, password, phone_number) VALUES ('${_cpf}', '${full_name}', '${_email}', '${_password}', '${phone_number}');`;
-            MySQL.query(registerUser, (err, result) => {
-                if (err) return reject({ status_code: 500, result: err });
-                return resolve({ status_code: 201, result: 'User created successfully' });
-            });
+
         });
     }
 
