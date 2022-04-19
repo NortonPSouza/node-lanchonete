@@ -24,13 +24,23 @@ class UserModel {
                 INSERT INTO user (cpf, name, phone) 
                 VALUES ('${cpf}', '${name}', '${phone}');
             `;
-            MySQL.query(registerUser, (err, result) => {
+            MySQL.query(registerUser, (err, resultUser) => {
                 if (err) return reject({ status_code: 400, result: err });
+
+                const linkToken = `
+                    INSERT INTO token (id_user)
+                    VALUES ('${resultUser.insertId}');
+                `;
+                MySQL.query(linkToken,(err, resultToken)=>{
+                    if (err) return reject({ status_code: 500, result: err });
+
+                });
+
                 const registerLogin = `
                     INSERT INTO login (id_user, email, password) 
-                    VALUES ('${result.insertId}','${email}', '${_password}');
+                    VALUES ('${resultUser.insertId}','${email}', '${_password}');
                 `;
-                MySQL.query(registerLogin, (err, result) => {
+                MySQL.query(registerLogin, (err, resultLogin) => {
                     if (err) return reject({ status_code: 400, result: err });
                     resolve({ status_code: 204, result: "User created successfully" });
                 });
