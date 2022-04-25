@@ -31,7 +31,7 @@ class UserModel {
                     INSERT INTO token (id_user)
                     VALUES ('${resultUser.insertId}');
                 `;
-                MySQL.query(linkToken,(err, resultToken)=>{
+                MySQL.query(linkToken, (err, resultToken) => {
                     if (err) return reject({ status_code: 500, result: err });
 
                 });
@@ -51,17 +51,12 @@ class UserModel {
     }
 
     static listAll() {
-        const listUsers = "SELECT * FROM lanchonete.user";
+        const listUsers = `SELECT id, name, phone, create_time FROM user;`;
         return new Promise((resolve, reject) => {
             MySQL.query(listUsers, (err, results) => {
                 if (err) return reject({ status_code: 400, result: err });
                 if (results.length) {
-                    const users = results.map(item => {
-                        delete item.cpf;
-                        delete item.password;
-                        return { ...item, email: Crypt.descrypt(item.email) }
-                    });
-                    resolve({ status_code: 200, result: users });
+                    resolve({ status_code: 200, result: results[0] });
                 }
                 else reject({ status_code: 404, result: "Not Found" })
             });
@@ -70,37 +65,46 @@ class UserModel {
 
     static listOne(userId) {
         return new Promise((resolve, reject) => {
-            const findUserQuery = `SELECT * FROM lanchonete.user WHERE id_user='${userId}'`;
-            MySQL.query(findUserQuery, (err, results) => {
+            const findUserQuery = `SELECT id, name, phone, create_time 
+                FROM user 
+                WHERE id='${userId}';
+            `;
+            MySQL.query(findUserQuery, (err, result) => {
                 if (err) return reject({ status_code: 400, result: err });
-                if (results.length) {
-                    const user = results.map(item => {
-                        delete item.cpf;
-                        delete item.password;
-                        return { ...item, email: Crypt.descrypt(item.email) }
-                    });
-                    resolve({ status_code: 200, result: user });
+                if (result.length) {
+                    resolve({ status_code: 200, result: result[0] });
                 }
                 else reject({ status_code: 404, result: "Not Found" });
             });
         });
     }
 
-    static updateUser(id, full_name, email, password, phone_number) {
-        const _email = Crypt.encrypt(email);
+    static updateUser(id, name, email, password, number) {
         const _password = Crypt.encrypt(password);
 
         return new Promise((resolve, reject) => {
-            const emailExist = `SELECT email FROM lanchonete.user WHERE email='${_email}';`;
+            const emailExist = `SELECT email FROM login WHERE email='${email}';`;
             MySQL.query(emailExist, (err, result) => {
-                if (err || !result) return reject({ status_code: 400, result: err });
-                if (result.length) {
-                    const updateUser = `UPDATE lanchonete.user SET full_name='${full_name}', email='${_email}', password='${_password}', phone_number='${phone_number}' WHERE id_user=${id};`;
-                    MySQL.query(updateUser, (err, result) => {
+                if (err) return reject({ status_code: 400, result: err });
+                const updateUser = `
+                        UPDATE user SET
+                        name='${name}',                         
+                        phone='${number}' 
+                        WHERE id=${id};
+                    `;
+                MySQL.query(updateUser, (err, result) => {
+                    if (err) reject({ status_code: 400, result: err });
+                    const updateLogin = `
+                            UPDATE login SET
+                            email='${email}',
+                            password='${_password}'
+                            WHERE id_user=${id};
+                        `;
+                    MySQL.query(updateLogin, (err, result) => {
                         if (err) reject({ status_code: 400, result: err });
-                        if (result.affectedRows) resolve({ status_code: 200, result: 'User updated successfully' });
+                        resolve({ status_code: 200, result: 'User updated successfully' });
                     });
-                };
+                });
             });
         });
     }
@@ -108,7 +112,7 @@ class UserModel {
     static updatePassword(id, password) {
         return new Promise((resolve, reject) => {
             const _password = Crypt.encrypt(password);
-            const updatePassword = `UPDATE lanchonete.user SET password='${_password}' WHERE id_user=${id};`
+            const updatePassword = `UPDATE login SET password='${_password}' WHERE id_user=${id};`
             MySQL.query(updatePassword, (err, result) => {
                 if (err) return reject({ status_code: 400, result: err });
                 if (result.affectedRows)
@@ -119,19 +123,12 @@ class UserModel {
 
     static deleteUser(id) {
         return new Promise((resolve, reject) => {
-            let email = '';
-            const userQuery = `SELECT email FROM lanchonete.user WHERE id_user='${id}'`;
-            const deleteUser = `DELETE FROM  lanchonete.user WHERE id_user='${id}'`;
-
-            MySQL.query(userQuery, (err, results) => results.map(item => email = item.email));
+            const deleteUser = `DELETE FROM user WHERE id='${id}'`;
 
             MySQL.query(deleteUser, (err, result) => {
                 if (err) return reject({ status_code: 400, result: err });
                 if (result.affectedRows) {
-                    const delelteLogin = `DELETE FROM  lanchonete.login WHERE email='${email}'`;
-                    MySQL.query(delelteLogin, (err, result) =>
-                        resolve({ status_code: 201, result: 'User deleted successfully' })
-                    );
+                    resolve({ status_code: 201, result: 'User deleted successfully' })
                 }
                 else reject({ status_code: 404, result: 'Not Found' });
             });

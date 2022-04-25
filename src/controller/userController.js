@@ -35,13 +35,13 @@ class UserController {
     }
 
     static updateUser(req, res) {
-        const { full_name, email, password, phone_number } = req.body;
+        const { name, email, password, phone } = req.body;
 
-        if (!full_name || !email || !password || !phone_number) {
+        if (!name || !email || !password || !phone) {
             return res.status(400).send('Filds are not must empty');
         }
 
-        UserModel.updateUser(req.params.id, full_name, email, password, phone_number)
+        UserModel.updateUser(req.params.id, name, email, password, phone)
             .then(({ status_code, result }) => res.status(status_code).send(result))
             .catch(({ status_code, result }) => res.status(status_code).send(result))
     }
