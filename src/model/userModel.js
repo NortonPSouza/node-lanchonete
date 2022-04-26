@@ -56,6 +56,10 @@ class UserModel {
             MySQL.query(listUsers, (err, results) => {
                 if (err) return reject({ status_code: 400, result: err });
                 if (results.length) {
+                    //TODO
+                    // rever eese results posicao para mais itens
+                    //colocar num map
+                    console.log(results[0]);
                     resolve({ status_code: 200, result: results[0] });
                 }
                 else reject({ status_code: 404, result: "Not Found" })
@@ -65,7 +69,8 @@ class UserModel {
 
     static listOne(userId) {
         return new Promise((resolve, reject) => {
-            const findUserQuery = `SELECT id, name, phone, create_time 
+            const findUserQuery = `
+                SELECT id, name, phone, create_time 
                 FROM user 
                 WHERE id='${userId}';
             `;

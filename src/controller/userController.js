@@ -1,4 +1,6 @@
-const UserModel = require('../model/userModel')
+const { is } = require('express/lib/request');
+const UserModel = require('../model/userModel');
+const UserValidate = require('../validate/userValidate');
 
 class UserController {
 
@@ -8,9 +10,20 @@ class UserController {
 
     static register(req, res) {
         const { cpf, name, email, password, phone } = req.body;
+        const isCPF = UserValidate.isCPF(cpf);
+        const isName = UserValidate.isName(name);
+        const isEmail = UserValidate.isEmail(email);
+        const isPhone = UserValidate.isPhone(phone);
+        const isPassword = UserValidate.isPassword(password)
 
-        if (!(cpf && name && email && password && phone)) {
-            return res.status(400).send("All input is required");
+        if (isCPF.err || isName.err || isEmail.err || isPhone.err || isPassword?.err ) {
+            return res.status(400).send({
+                cpf: isCPF?.err,
+                email: isEmail?.err,
+                name: isName?.err,
+                phone: isPhone?.err,
+                password: isPassword?.err            
+            });
         }
 
         UserModel.register(cpf, name, email, password, phone)
@@ -58,9 +71,9 @@ class UserController {
     }
 
     static deleteUser(req, res) {
-        if (!req.params.id){
+        if (!req.params.id) {
             return res.status(400).send('ID invalid');
-        } 
+        }
 
         UserModel.deleteUser(req.params.id)
             .then(({ status_code, result }) => res.status(status_code).send(result))
