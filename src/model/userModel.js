@@ -59,7 +59,7 @@ class UserModel {
                     //TODO
                     // rever eese results posicao para mais itens
                     //colocar num map
-                    console.log(results[0]);
+                    console.log(results);
                     resolve({ status_code: 200, result: results[0] });
                 }
                 else reject({ status_code: 404, result: "Not Found" })

@@ -1,4 +1,3 @@
-const { is } = require('express/lib/request');
 const UserModel = require('../model/userModel');
 const UserValidate = require('../validate/userValidate');
 
@@ -10,20 +9,18 @@ class UserController {
 
     static register(req, res) {
         const { cpf, name, email, password, phone } = req.body;
-        const isCPF = UserValidate.isCPF(cpf);
-        const isName = UserValidate.isName(name);
-        const isEmail = UserValidate.isEmail(email);
-        const isPhone = UserValidate.isPhone(phone);
-        const isPassword = UserValidate.isPassword(password)
+        const fields = {
+            isCPF: UserValidate.isCPF(cpf),
+            isName: UserValidate.isName(name),
+            isEmail: UserValidate.isEmail(email),
+            isPhone: UserValidate.isPhone(phone),
+            isPassword: UserValidate.isPassword(password)
+        }
 
-        if (isCPF.err || isName.err || isEmail.err || isPhone.err || isPassword?.err ) {
-            return res.status(400).send({
-                cpf: isCPF?.err,
-                email: isEmail?.err,
-                name: isName?.err,
-                phone: isPhone?.err,
-                password: isPassword?.err            
-            });
+        for (const key in fields) {
+            if (fields[key].err) {
+                return res.status(400).send({ err: fields[key].err });
+            }
         }
 
         UserModel.register(cpf, name, email, password, phone)

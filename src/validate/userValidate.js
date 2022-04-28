@@ -57,6 +57,7 @@ class UserValidate {
         if (!password.test(value)) {
             return { err: "Password is not strong enough" }
         }
+        return true;
     }
 }
 

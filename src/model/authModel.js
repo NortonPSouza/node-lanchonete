@@ -34,7 +34,7 @@ class AuthModel {
                     `;
                     MySQL.query(userQuery, (err, resultUser) => {
                         if (err) return reject({ status_code: 500, result: err });
-                        resolve({ status_code: 201, result: resultUser[0] });
+                        resolve({ status_code: 200, result: resultUser[0] });
                     });
 
                 });
