@@ -23,15 +23,15 @@ DROP TABLE IF EXISTS `login`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `login` (
-  `id_login` int NOT NULL,
-  `email` varchar(150) DEFAULT NULL,
-  `password` varchar(150) DEFAULT NULL,
-  `recuperation_code` int DEFAULT NULL,
-  PRIMARY KEY (`id_login`),
-  UNIQUE KEY `id_login_UNIQUE` (`id_login`),
+  `id` int NOT NULL AUTO_INCREMENT,
+  `email` varchar(100) DEFAULT NULL,
+  `password` varchar(45) DEFAULT NULL,
+  `id_user` int DEFAULT NULL,
+  PRIMARY KEY (`id`),
   UNIQUE KEY `email_UNIQUE` (`email`),
-  CONSTRAINT `fk_login_1` FOREIGN KEY (`id_login`) REFERENCES `user` (`id_user`) ON DELETE CASCADE ON UPDATE RESTRICT
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  KEY `fk_login_1_idx` (`id_user`),
+  CONSTRAINT `fk_login_1` FOREIGN KEY (`id_user`) REFERENCES `user` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -40,6 +40,7 @@ CREATE TABLE `login` (
 
 LOCK TABLES `login` WRITE;
 /*!40000 ALTER TABLE `login` DISABLE KEYS */;
+INSERT INTO `login` VALUES (3,'teste@teste.com','f3a296af2610168fcfb7458b6a41616c',14),(9,'teste@teste1.com','59d79a2b9744beb005befbb9e3b24f3a',66);
 /*!40000 ALTER TABLE `login` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -52,4 +53,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-04-07 21:34:56
+-- Dump completed on 2022-04-29 21:29:13

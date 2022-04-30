@@ -23,15 +23,14 @@ DROP TABLE IF EXISTS `token`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `token` (
-  `id_token` int NOT NULL,
-  `token` varchar(600) DEFAULT NULL,
+  `id` int NOT NULL AUTO_INCREMENT,
+  `access_token` varchar(600) DEFAULT NULL,
   `expires_in` int DEFAULT NULL,
-  PRIMARY KEY (`id_token`),
-  UNIQUE KEY `id_token_UNIQUE` (`id_token`),
-  UNIQUE KEY `token_UNIQUE` (`token`),
-  UNIQUE KEY `expires_in_UNIQUE` (`expires_in`),
-  CONSTRAINT `fk_new_table_1` FOREIGN KEY (`id_token`) REFERENCES `user` (`id_user`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  `id_user` int DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_token_1_idx` (`id_user`),
+  CONSTRAINT `fk_token_1` FOREIGN KEY (`id_user`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -40,6 +39,7 @@ CREATE TABLE `token` (
 
 LOCK TABLES `token` WRITE;
 /*!40000 ALTER TABLE `token` DISABLE KEYS */;
+INSERT INTO `token` VALUES (2,'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTQsImlhdCI6MTY1MTAwMzEyNiwiZXhwIjoxNjUxMDA2NzI2fQ.LtNr8k3ep89G7Srr1JszLBfeJyzwFkS2drVIIq_-zRI',3600,14),(8,'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NjYsImlhdCI6MTY1MTA4NzI5NiwiZXhwIjoxNjUxMDkwODk2fQ.mCMB9cAHxGJSnZBXJwe-2g2UGQ_wds3obsGXOzSBch0',3600,66);
 /*!40000 ALTER TABLE `token` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -52,4 +52,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-04-07 21:34:56
+-- Dump completed on 2022-04-29 21:29:13
