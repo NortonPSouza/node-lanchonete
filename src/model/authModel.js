@@ -1,4 +1,4 @@
-const MySQL = require('../database/mysql');
+const MySQL = require('../connections/mysql');
 const Crypt = require('../services/crypt');
 const jwt = require('jsonwebtoken');
 class AuthModel {
