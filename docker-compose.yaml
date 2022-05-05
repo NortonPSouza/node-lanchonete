@@ -1,0 +1,16 @@
+version: '3'
+services:
+    database:
+        image: mysql:latest
+        container_name: database
+        command: "--default-authentication-plugin=mysql_native_password"
+        environment:
+            MYSQL_ROOT_PASSWORD: dfe4da18
+            MYSQL_DATABASE: lanchonete
+            MYSQL_USER: dev-norton
+            MYSQL_PASSWORD: admin
+        volumes:
+            - ./database:/docker-entrypoint-initdb.d/
+            - ./docker/mysql:/var/lib/mysql
+        ports:
+            - "3306:3306"
