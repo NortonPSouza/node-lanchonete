@@ -56,11 +56,8 @@ class UserModel {
             MySQL.query(listUsers, (err, results) => {
                 if (err) return reject({ status_code: 400, result: err });
                 if (results.length) {
-                    //TODO
-                    // rever eese results posicao para mais itens
-                    //colocar num map
-                    console.log(results);
-                    resolve({ status_code: 200, result: results[0] });
+                    const listUser = results.map(item => item);
+                    resolve({ status_code: 200, result: listUser });
                 }
                 else reject({ status_code: 404, result: "Not Found" })
             });

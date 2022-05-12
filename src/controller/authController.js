@@ -7,7 +7,7 @@ class AuthController {
 
     static login(req, res) {
         const { email, password } = req.body;
-
+        //TODO- add validate and remove spaces empty on string
         if (!email || !password) return res.status(400).send({ error: { description: "All input is required" } });
 
         AuthModel.login(email, password)
