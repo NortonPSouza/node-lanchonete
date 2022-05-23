@@ -51,7 +51,11 @@ class UserModel {
     }
 
     static listAll() {
-        const listUsers = `SELECT id, name, phone, create_time FROM user;`;
+        const listUsers = `
+            SELECT u.id, u.name, u.phone, u.create_time, l.email 
+            FROM user AS u
+            INNER JOIN login as l ON u.id = l.id_user;
+        `;
         return new Promise((resolve, reject) => {
             MySQL.query(listUsers, (err, results) => {
                 if (err) return reject({ status_code: 400, result: err });
@@ -67,9 +71,10 @@ class UserModel {
     static listOne(userId) {
         return new Promise((resolve, reject) => {
             const findUserQuery = `
-                SELECT id, name, phone, create_time 
-                FROM user 
-                WHERE id='${userId}';
+                SELECT u.id, u.name, u.phone, u.create_time, l.email 
+                FROM user AS u
+                INNER JOIN login as l ON u.id = l.id_user
+                WHERE u.id='${userId}';
             `;
             MySQL.query(findUserQuery, (err, result) => {
                 if (err) return reject({ status_code: 400, result: err });
