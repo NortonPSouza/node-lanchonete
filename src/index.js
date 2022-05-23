@@ -8,7 +8,7 @@ const router = require('./routes');
 const port = process.env.PORT || API_PORT;
 
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: true }));
 app.use(morgan("dev"));
 
 app.use('/api/v1', router)

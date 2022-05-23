@@ -9,7 +9,7 @@ router
     .post('/user/register', UserController.register)
     .get('/user/list', Authorization, UserController.listAll)
     .get('/user/:id', Authorization, UserController.listOne)
-    .delete('/user/:id', Authorization, UserController.deleteUser)
+    .delete('/user/delete/:id', Authorization, UserController.deleteUser)
     .put('/user/update/:id', Authorization, UserController.updateUser)
     .patch('/user/update/password/:id', Authorization, UserController.updatePassword)
 

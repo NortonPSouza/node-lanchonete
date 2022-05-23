@@ -1,5 +1,4 @@
 class UserValidate {
-    //TODO- function for remove spaces empty on string
     static EMPTY_FIELD = "FIELD cannot be empty"
 
     static isEmail(value) {
