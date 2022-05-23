@@ -18,8 +18,6 @@ class AuthModel {
 
                 const id = resultLogin[0].id_user;
                 const access_token = jwt.sign({ id }, process.env.TOKEN_KEY, { expiresIn: '1h' });
-                //TODO
-                //rever token cadastrado duplicado para o diferentes usuarios
                 const registerAccessToken = `
                     UPDATE token SET 
                     access_token='${access_token}', expires_in='${3600}' WHERE id_user='${id}';
