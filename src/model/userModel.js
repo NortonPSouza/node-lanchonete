@@ -1,4 +1,3 @@
-const res = require('express/lib/response');
 const MySQL = require('../connections/mysql');
 const Crypt = require('../services/crypt');
 
@@ -26,7 +25,7 @@ class UserModel {
             const selctPermission = `
                 SELECT id
                 FROM permission
-                WHERE type = ${Number(type)}
+                WHERE permission = ${Number(type)}
             `;
             MySQL.query(selctPermission, (err, resultPermission) => {
                 const idPermission = resultPermission[0].id;
@@ -62,9 +61,10 @@ class UserModel {
 
     static listAll() {
         const listUsers = `
-            SELECT u.id, u.name, u.phone, u.create_time, l.email 
-            FROM user AS u
-            INNER JOIN login as l ON u.id = l.id_user;
+            SELECT u.id, u.name, u.phone, u.create_time, l.email, p.permission, p.permission_description
+            FROM user u
+            INNER JOIN login l ON u.id = l.id_user
+            INNER JOIN permission p ON p.id = u.id_permission
         `;
         return new Promise((resolve, reject) => {
             MySQL.query(listUsers, (err, results) => {
@@ -81,9 +81,10 @@ class UserModel {
     static listOne(userId) {
         return new Promise((resolve, reject) => {
             const findUserQuery = `
-                SELECT u.id, u.name, u.phone, u.create_time, l.email 
+                SELECT u.id, u.name, u.phone, u.create_time, l.email, p.permission, p.permission_description
                 FROM user AS u
                 INNER JOIN login as l ON u.id = l.id_user
+                INNER JOIN permission p ON p.id = u.id_permission
                 WHERE u.id='${userId}';
             `;
             MySQL.query(findUserQuery, (err, result) => {
