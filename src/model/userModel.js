@@ -1,9 +1,12 @@
+const res = require('express/lib/response');
 const MySQL = require('../connections/mysql');
 const Crypt = require('../services/crypt');
 
 class UserModel {
 
-    static register(cpf, name, email, password, phone) {
+    static TYPE_DESCRIPTION = ["Administrador", "Cliente"];
+
+    static register(cpf, name, email, password, phone, type) {
         const _password = Crypt.encrypt(password);
 
         return new Promise((resolve, reject) => {
@@ -14,39 +17,46 @@ class UserModel {
                 WHERE u.cpf='${cpf}' OR l.email='${email}';
             `;
             MySQL.query(userQuery, (err, result) => {
-                if (err) return reject({ status_code: 400, result: err });
+                if (err) return reject({ status_code: 500, result: err });
                 if (result.length) {
                     return reject({ status_code: 409, result: "User Already Exist" });
                 }
             });
 
-            const registerUser = `
-                INSERT INTO user (cpf, name, phone) 
-                VALUES ('${cpf}', '${name}', '${phone}');
+            const selctPermission = `
+                SELECT id
+                FROM permission
+                WHERE type = ${Number(type)}
             `;
-            MySQL.query(registerUser, (err, resultUser) => {
-                if (err) return reject({ status_code: 400, result: err });
+            MySQL.query(selctPermission, (err, resultPermission) => {
+                const idPermission = resultPermission[0].id;
 
-                const linkToken = `
-                    INSERT INTO token (id_user)
-                    VALUES ('${resultUser.insertId}');
+                const registerUser = `
+                    INSERT INTO user (cpf, name, phone, id_permission) 
+                    VALUES ('${cpf}', '${name}', '${phone}', '${idPermission}');
                 `;
-                MySQL.query(linkToken, (err, resultToken) => {
+                MySQL.query(registerUser, (err, resultUser) => {
                     if (err) return reject({ status_code: 500, result: err });
+                    const idUser = resultUser.insertId;
 
-                });
+                    const linkToken = `
+                        INSERT INTO token (id_user)
+                        VALUES ('${idUser}');
+                    `;
+                    MySQL.query(linkToken, (err, resultToken) => {
+                        if (err) return reject({ status_code: 500, result: err });
+                    });
 
-                const registerLogin = `
-                    INSERT INTO login (id_user, email, password) 
-                    VALUES ('${resultUser.insertId}','${email}', '${_password}');
-                `;
-                MySQL.query(registerLogin, (err, resultLogin) => {
-                    if (err) return reject({ status_code: 400, result: err });
-                    resolve({ status_code: 204, result: "User created successfully" });
+                    const registerLogin = `
+                        INSERT INTO login (id_user, email, password) 
+                        VALUES ('${idUser}','${email}', '${_password}');
+                    `;
+                    MySQL.query(registerLogin, (err, resultLogin) => {
+                        if (err) return reject({ status_code: 500, result: err });
+                        resolve({ status_code: 204, result: "User created successfully" });
+                    });
                 });
             });
-
-
         });
     }
 

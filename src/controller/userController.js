@@ -8,10 +8,11 @@ class UserController {
     }
 
     static register(req, res) {
-        const { cpf, name, email, password, phone } = req.body;
+        const { cpf, name, email, password, phone, type } = req.body;
         const fields = {
             isCPF: UserValidate.isCPF(cpf),
             isName: UserValidate.isName(name),
+            isType: UserValidate.isType(type),
             isEmail: UserValidate.isEmail(email),
             isPhone: UserValidate.isPhone(phone),
             isPassword: UserValidate.isPassword(password)
@@ -23,7 +24,7 @@ class UserController {
             }
         }
 
-        UserModel.register(cpf, name, email, password, phone)
+        UserModel.register(cpf, name, email, password, phone, type)
             .then(({ status_code, result }) => res.status(status_code).send(result))
             .catch(({ status_code, result }) => res.status(status_code).send(result))
     }

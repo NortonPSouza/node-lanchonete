@@ -58,6 +58,17 @@ class UserValidate {
         }
         return true;
     }
+
+    static isType(value) {
+        const type = /^\(?[1-2]\)?/
+        if (!value) {
+            return { err: UserValidate.EMPTY_FIELD.replace("FIELD", "type") };
+        }
+        if (!type.test(value)) {
+            return { err: "type is invalid" }
+        }
+        return true;
+    }
 }
 
 module.exports = UserValidate;
