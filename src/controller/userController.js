@@ -51,7 +51,6 @@ class UserController {
             isName: UserValidate.isName(name),
             isEmail: UserValidate.isEmail(email),
             isPhone: UserValidate.isPhone(phone),
-            isPassword: UserValidate.isPassword(password)
         }
 
         for (const key in fields) {

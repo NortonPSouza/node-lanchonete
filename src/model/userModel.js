@@ -28,6 +28,7 @@ class UserModel {
                 WHERE permission = ${Number(type)}
             `;
             MySQL.query(selctPermission, (err, resultPermission) => {
+                if (err) return reject({ status_code: 500, result: err });
                 const idPermission = resultPermission[0].id;
 
                 const registerUser = `
@@ -68,7 +69,7 @@ class UserModel {
         `;
         return new Promise((resolve, reject) => {
             MySQL.query(listUsers, (err, results) => {
-                if (err) return reject({ status_code: 400, result: err });
+                if (err) return reject({ status_code: 500, result: err });
                 if (results.length) {
                     const listUser = results.map(item => item);
                     resolve({ status_code: 200, result: listUser });
@@ -81,14 +82,14 @@ class UserModel {
     static listOne(userId) {
         return new Promise((resolve, reject) => {
             const findUserQuery = `
-                SELECT u.id, u.name, u.phone, u.create_time, l.email, p.permission, p.permission_description
+                SELECT u.id, u.name, u.phone, l.email, p.permission, p.permission_description
                 FROM user AS u
                 INNER JOIN login as l ON u.id = l.id_user
                 INNER JOIN permission p ON p.id = u.id_permission
                 WHERE u.id='${userId}';
             `;
             MySQL.query(findUserQuery, (err, result) => {
-                if (err) return reject({ status_code: 400, result: err });
+                if (err) return reject({ status_code: 500, result: err });
                 if (result.length) {
                     resolve({ status_code: 200, result: result[0] });
                 }
@@ -97,32 +98,37 @@ class UserModel {
         });
     }
 
-    static updateUser(id, name, email, password, number) {
+    static updateUser(idUser, name, email, password, phone) {
         const _password = Crypt.encrypt(password);
+        const hasPassword = password ? `password='${_password}'` : "";
 
         return new Promise((resolve, reject) => {
             const emailExist = `SELECT email FROM login WHERE email='${email}';`;
             MySQL.query(emailExist, (err, result) => {
-                if (err) return reject({ status_code: 400, result: err });
-                const updateUser = `
-                        UPDATE user SET
-                        name='${name}',                         
-                        phone='${number}' 
-                        WHERE id=${id};
-                    `;
-                MySQL.query(updateUser, (err, result) => {
-                    if (err) reject({ status_code: 400, result: err });
-                    const updateLogin = `
-                            UPDATE login SET
-                            email='${email}',
-                            password='${_password}'
-                            WHERE id_user=${id};
+                if (err) return reject({ status_code: 500, result: err });
+                if (email !== result[0]?.email) {
+                    const updateUser = `
+                            UPDATE user SET
+                            name='${name}',                         
+                            phone='${phone}' 
+                            WHERE id=${idUser};
                         `;
-                    MySQL.query(updateLogin, (err, result) => {
-                        if (err) reject({ status_code: 400, result: err });
-                        resolve({ status_code: 200, result: 'User updated successfully' });
+                    MySQL.query(updateUser, (err, result) => {
+                        if (err) reject({ status_code: 500, result: err });
+                        const updateLogin = `
+                                UPDATE login SET
+                                email='${email}',
+                                ${hasPassword}
+                                WHERE id_user=${idUser};
+                            `;
+                        MySQL.query(updateLogin, (err, result) => {
+                            if (err) reject({ status_code: 500, result: err });
+                            resolve({ status_code: 200, result: 'User updated successfully' });
+                        });
                     });
-                });
+                } else {
+                    return reject({ status_code: 409, result: "conflict email of user" });
+                }
             });
         });
     }
@@ -132,7 +138,7 @@ class UserModel {
             const _password = Crypt.encrypt(password);
             const updatePassword = `UPDATE login SET password='${_password}' WHERE id_user=${id};`
             MySQL.query(updatePassword, (err, result) => {
-                if (err) return reject({ status_code: 400, result: err });
+                if (err) return reject({ status_code: 500, result: err });
                 if (result.affectedRows)
                     resolve({ status_code: 200, result: 'Password updated successfully' });
             });
@@ -144,7 +150,7 @@ class UserModel {
             const deleteUser = `DELETE FROM user WHERE id='${id}'`;
 
             MySQL.query(deleteUser, (err, result) => {
-                if (err) return reject({ status_code: 400, result: err });
+                if (err) return reject({ status_code: 500, result: err });
                 if (result.affectedRows) {
                     resolve({ status_code: 201, result: 'User deleted successfully' })
                 }

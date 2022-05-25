@@ -10,7 +10,7 @@ const port = process.env.PORT || API_PORT;
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-morgan.format("logger-dev"," :remote-addr [:date[web]] :method :url :status :response-time ms - :user-agent")
+morgan.format("logger-dev"," :remote-addr :method :url :status :response-time ms - [:date[web]] - :user-agent")
 app.use(morgan("logger-dev"));
 
 app.use('/api/v1', router);
