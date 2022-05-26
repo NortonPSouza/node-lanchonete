@@ -100,25 +100,30 @@ class UserModel {
 
     static updateUser(idUser, name, email, password, phone) {
         const _password = Crypt.encrypt(password);
-        const hasPassword = password ? `password='${_password}'` : "";
+        const hasPassword = password ? `password='${_password}',` : "\n";
 
         return new Promise((resolve, reject) => {
-            const emailExist = `SELECT email FROM login WHERE email='${email}';`;
+            const emailExist = `
+                SELECT email, id_user
+                FROM login 
+                WHERE id_user='${idUser}';`
+            ;
             MySQL.query(emailExist, (err, result) => {
-                if (err) return reject({ status_code: 500, result: err });
-                if (email !== result[0]?.email) {
+                if (err) return reject({ status_code: 400, result: err });
+                if (email === result[0]?.email && result[0]?.id_user == idUser) {
                     const updateUser = `
                             UPDATE user SET
                             name='${name}',                         
                             phone='${phone}' 
                             WHERE id=${idUser};
                         `;
+                    console.log(hasPassword);
                     MySQL.query(updateUser, (err, result) => {
                         if (err) reject({ status_code: 500, result: err });
                         const updateLogin = `
                                 UPDATE login SET
-                                email='${email}',
                                 ${hasPassword}
+                                email='${email}'
                                 WHERE id_user=${idUser};
                             `;
                         MySQL.query(updateLogin, (err, result) => {
@@ -127,7 +132,7 @@ class UserModel {
                         });
                     });
                 } else {
-                    return reject({ status_code: 409, result: "conflict email of user" });
+                    return reject({ status_code: 409, result: "eamil already exists" });
                 }
             });
         });
