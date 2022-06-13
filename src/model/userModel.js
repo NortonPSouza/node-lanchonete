@@ -1,5 +1,6 @@
 const MySQL = require('../connections/mysql');
 const Crypt = require('../services/crypt');
+const UserRepository = require('../repository/userRepository');
 
 class UserModel {
 
@@ -23,13 +24,13 @@ class UserModel {
             });
 
             const selctPermission = `
-                SELECT id
+                SELECT *
                 FROM permission
                 WHERE permission = ${Number(type)}
             `;
             MySQL.query(selctPermission, (err, resultPermission) => {
                 if (err) return reject({ status_code: 500, result: err });
-                const idPermission = resultPermission[0].id;
+                const idPermission = resultPermission[0].permission;
 
                 const registerUser = `
                     INSERT INTO user (cpf, name, phone, id_permission) 
@@ -61,40 +62,24 @@ class UserModel {
     }
 
     static listAll() {
-        const listUsers = `
-            SELECT u.id, u.name, u.phone, u.create_time, l.email, p.permission, p.permission_description
-            FROM user u
-            INNER JOIN login l ON u.id = l.id_user
-            INNER JOIN permission p ON p.id = u.id_permission
-        `;
         return new Promise((resolve, reject) => {
-            MySQL.query(listUsers, (err, results) => {
-                if (err) return reject({ status_code: 500, result: err });
-                if (results.length) {
-                    const listUser = results.map(item => item);
-                    resolve({ status_code: 200, result: listUser });
-                }
-                else reject({ status_code: 404, result: "Not Found" })
-            });
+            UserRepository.list()
+                .then(result => {
+                    if(!result.length) reject({ status_code: 404, result: "Not Found" });
+                    return resolve({ status_code: 200, result: result });
+                })
+                .catch(err => reject({ status_code: 500, result: err }))
         });
     }
 
     static listOne(userId) {
         return new Promise((resolve, reject) => {
-            const findUserQuery = `
-                SELECT u.id, u.name, u.phone, l.email, p.permission, p.permission_description
-                FROM user AS u
-                INNER JOIN login as l ON u.id = l.id_user
-                INNER JOIN permission p ON p.id = u.id_permission
-                WHERE u.id='${userId}';
-            `;
-            MySQL.query(findUserQuery, (err, result) => {
-                if (err) return reject({ status_code: 500, result: err });
-                if (result.length) {
-                    resolve({ status_code: 200, result: result[0] });
-                }
-                else reject({ status_code: 404, result: "Not Found" });
-            });
+            UserRepository.find(userId)
+                .then(result => {
+                    if(!result.length) reject({ status_code: 404, result: "Not Found" });
+                    return resolve({ status_code: 200, result: result.at(0) });
+                })
+                .catch(err => reject({ status_code: 500, result: err }))
         });
     }
 
@@ -107,9 +92,9 @@ class UserModel {
                 SELECT email, id_user
                 FROM login 
                 WHERE id_user='${idUser}';`
-            ;
+                ;
             MySQL.query(emailExist, (err, result) => {
-                if (err) return reject({ status_code: 400, result: err });
+                if (err) return reject({ status_code: 500, result: err });
                 if (email === result[0]?.email && result[0]?.id_user == idUser) {
                     const updateUser = `
                             UPDATE user SET
@@ -157,7 +142,7 @@ class UserModel {
             MySQL.query(deleteUser, (err, result) => {
                 if (err) return reject({ status_code: 500, result: err });
                 if (result.affectedRows) {
-                    resolve({ status_code: 201, result: 'User deleted successfully' })
+                    resolve({ status_code: 200, result: 'User deleted successfully' })
                 }
                 else reject({ status_code: 404, result: 'Not Found' });
             });

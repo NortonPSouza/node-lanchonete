@@ -6,11 +6,11 @@ const Authorization = require('../services/middleware');
 
 router
     .post('/auth', Auth.login)
-    .post('/user/register', UserController.register)
-    .get('/user/list', Authorization, UserController.listAll)
+    .post('/user', UserController.register)
+    .get('/user', Authorization, UserController.listAll)
     .get('/user/:id', Authorization, UserController.listOne)
-    .delete('/user/delete/:id', Authorization, UserController.deleteUser)
-    .put('/user/update/:id', Authorization, UserController.updateUser)
-    .patch('/user/update/password/:id', Authorization, UserController.updatePassword)
+    .delete('/user/:id', Authorization, UserController.deleteUser)
+    .put('/user/:id', Authorization, UserController.updateUser)
+    .patch('/user/:id', Authorization, UserController.updatePassword)
 
 module.exports = router;
