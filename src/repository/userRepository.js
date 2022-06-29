@@ -1,6 +1,5 @@
 const MySQL = require('../connections/mysql');
 
-
 class UserRepository {
 
     static find(id) {
@@ -33,6 +32,23 @@ class UserRepository {
             });
         });
     }
+
+    static checkPermission(id, type){
+        return new Promise((resolve, reject)=>{
+            const checkPermission = `
+                SELECT u.name, p.permission_description , u.id_permission 
+                FROM permission p 
+                INNER JOIN user u ON p.permission = u.id_permission
+                WHERE u.id = ${id} AND p.permission_description  = ${type};
+            `;
+            MySQL.query(checkPermission,((error,result)=>{
+                if(error) return reject(error);
+                console.log(result);
+                if(!result.length) return reject(false)
+                return resolve(true);
+            }));
+        });
+    }
 }
 
-module.exports = UserRepository
+module.exports = UserRepository;
