@@ -1,4 +1,4 @@
-import { ResultLoginData, ResultUserData } from "../types/user";
+import { ResultLoginData, ResultUserData } from "../types/login";
 
 const MySQL = require('../connections/mysql');
 const Crypt = require('../services/crypt');
