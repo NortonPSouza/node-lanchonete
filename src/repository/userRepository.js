@@ -17,6 +17,20 @@ class UserRepository {
             });
         });
     }
+    
+    static getIdByToken(token){
+        return new Promise((resolve, reject)=>{
+            const getIdUser =`
+                SELECT id_user 
+                FROM  token AS t 
+                WHERE t.access_token = "${token}" 
+            `;
+            MySQL.query(getIdUser, (error, result) => {
+                if (error) return reject(error);
+                return resolve(result);
+            });
+        })
+    }
 
     static list() {
         return new Promise((resolve, reject) => {
@@ -34,12 +48,13 @@ class UserRepository {
     }
 
     static checkPermission(id, type){
+        console.log(id);
         return new Promise((resolve, reject)=>{
             const checkPermission = `
                 SELECT u.name, p.permission_description , u.id_permission 
                 FROM permission p 
                 INNER JOIN user u ON p.permission = u.id_permission
-                WHERE u.id = ${id} AND p.permission_description  = ${type};
+                WHERE u.id = ${id} AND p.permission_description  = '${type}';
             `;
             MySQL.query(checkPermission,((error,result)=>{
                 if(error) return reject(error);

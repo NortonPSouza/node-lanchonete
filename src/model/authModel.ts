@@ -20,21 +20,22 @@ class AuthModel {
                 if (!resultLogin.length) return reject({ status_code: 401, result: "Email or password is invalid" });                
                 
                 const id = resultLogin.at(0)?.id_user;
-                const access_token = jwt.sign({ id }, process.env.TOKEN_KEY, { expiresIn: '1h' });
+                const access_token = jwt.sign({ id }, process.env.TOKEN_KEY, { expiresIn: '1h' });                
                 const registerAccessToken = `
                     UPDATE token SET 
                     access_token='${access_token}', expires_in='${3600}' WHERE id_user='${id}';
                 `;
                 MySQL.query(registerAccessToken, (err: Error, resultToken: null) => {
                     if (err) return reject({ status_code: 500, result: err });
-
                     const userQuery = `
-                        SELECT id_user, name, expires_in, access_token
+                        SELECT u.id, name, expires_in, access_token
                         FROM token AS t
                         INNER JOIN user AS u ON u.id = t.id_user
+                        INNER JOIN login AS l ON l.id_user  = t.id_user 
+                        WHERE l.email='${email}' AND l.password='${_password}';
                     `;
                     MySQL.query(userQuery, (err: Error, resultUser: ResultUserData) => {
-                        if (err) return reject({ status_code: 500, result: err });
+                        if (err) return reject({ status_code: 500, result: err });                        
                         resolve({ status_code: 200, result: resultUser[0] });
                     });
 
