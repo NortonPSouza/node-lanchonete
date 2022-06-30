@@ -5,7 +5,7 @@ class UserRepository {
     static find(id) {
         return new Promise((resolve, reject) => {
             const querry = `
-                SELECT u.id, u.name, u.phone, l.email, p.permission, p.permission_description
+                SELECT u.id, u.name, u.phone,u.create_time, l.email, p.permission, p.permission_description
                 FROM user AS u
                 INNER JOIN login as l ON u.id = l.id_user
                 INNER JOIN permission p ON p.id = u.id_permission

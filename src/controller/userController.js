@@ -20,7 +20,7 @@ class UserController {
             };
         };
 
-        UserModel.register(cpf, name, email, password, phone, type)
+        UserModel.register({ cpf, name, email, password, phone, type })
             .then(({ status_code, result }) => res.status(status_code).send(result))
             .catch(({ status_code, result }) => res.status(status_code).send(result))
     }
@@ -55,17 +55,17 @@ class UserController {
             };
         };
 
-        UserModel.updateUser(req.params.id, name, email, password, phone)
+        UserModel.updateUser({ idUser: req.params.id, name, email, password, phone })
             .then(({ status_code, result }) => res.status(status_code).send(result))
             .catch(({ status_code, result }) => res.status(status_code).send(result))
     }
 
     static updatePassword(req, res) {
-       const isPassword = UserValidate.isPassword(req.body.password);
+        const isPassword = UserValidate.isPassword(req.body.password);
 
-       if(isPassword.err){
-           return res.status(400).send({err: isPassword.err})
-       };
+        if (isPassword.err) {
+            return res.status(400).send({ err: isPassword.err })
+        };
 
         UserModel.updatePassword(req.params.id, req.body.password)
             .then(({ status_code, result }) => res.status(status_code).send(result))
