@@ -48,7 +48,6 @@ class UserRepository {
     }
 
     static checkPermission(id, type){
-        console.log(id);
         return new Promise((resolve, reject)=>{
             const checkPermission = `
                 SELECT u.name, p.permission_description , u.id_permission 
@@ -58,7 +57,6 @@ class UserRepository {
             `;
             MySQL.query(checkPermission,((error,result)=>{
                 if(error) return reject(error);
-                console.log(result);
                 if(!result.length) return reject(false)
                 return resolve(true);
             }));
