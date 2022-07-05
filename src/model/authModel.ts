@@ -1,6 +1,6 @@
 import { ResultLoginData, ResultUserData } from "../types/login";
+import MySQL from '../connections/mysql';
 
-const MySQL = require('../connections/mysql');
 const Crypt = require('../services/crypt');
 const jwt = require('jsonwebtoken');
 
@@ -28,7 +28,7 @@ class AuthModel {
                 MySQL.query(registerAccessToken, (err: Error, resultToken: null) => {
                     if (err) return reject({ status_code: 500, result: err });
                     const userQuery = `
-                        SELECT u.id, name, expires_in, access_token
+                        SELECT expires_in, access_token
                         FROM token AS t
                         INNER JOIN user AS u ON u.id = t.id_user
                         INNER JOIN login AS l ON l.id_user  = t.id_user 

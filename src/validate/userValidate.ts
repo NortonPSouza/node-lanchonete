@@ -1,7 +1,7 @@
 class UserValidate {
     static EMPTY_FIELD = "FIELD cannot be empty"
 
-    static isEmail(value) {
+    static isEmail(value: string) {
         const email = /\S+@\S+\.\S+/;
         if (!value) {
             return { err: UserValidate.EMPTY_FIELD.replace("FIELD", "Email") };
@@ -12,7 +12,7 @@ class UserValidate {
         return true;
     }
 
-    static isName(value) {
+    static isName(value: string) {
         const name = /^[A-Za-záàâãéèêíïóôõöúçñÁÀÂÃÉÈÍÏÓÔÕÖÚÇÑ ]+$/;
         if (!value) {
             return { err: UserValidate.EMPTY_FIELD.replace("FIELD", "Name") };
@@ -26,7 +26,7 @@ class UserValidate {
         return true;
     }
 
-    static isCPF(value) {
+    static isCPF(value: string) {
         const cpf = /^[0-9]{3}[\.]?[0-9]{3}[\.]?[0-9]{3}[\.]?[-]?[0-9]{2}$/;
         if (!value) {
             return { err: UserValidate.EMPTY_FIELD.replace("FIELD", "cpf") };
@@ -37,7 +37,7 @@ class UserValidate {
         return true;
     }
 
-    static isPhone(value) {
+    static isPhone(value: string) {
         const phone = /^\(?[1-9]{2}\)? ?(?:[2-8]|9[1-9])[0-9]{3}\-?[0-9]{4}$/;
         if (!value) {
             return { err: UserValidate.EMPTY_FIELD.replace("FIELD", "phone") };
@@ -48,7 +48,7 @@ class UserValidate {
         return true;
     }
 
-    static isPassword(value) {
+    static isPassword(value: string) {
         const password = /^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[$*&@#])[0-9a-zA-Z$*&@#]{6,}$/;
         if (!value) {
             return { err: UserValidate.EMPTY_FIELD.replace("FIELD", "password") };
@@ -59,7 +59,8 @@ class UserValidate {
         return true;
     }
 
-    static isType(value) {
+    //TODO - analytic with bera about this values can be type number
+    static isType(value: string) {
         const type = /^\(?[1-2]\)?/
         if (!value) {
             return { err: UserValidate.EMPTY_FIELD.replace("FIELD", "type") };

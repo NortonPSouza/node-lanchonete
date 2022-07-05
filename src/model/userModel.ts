@@ -1,4 +1,4 @@
-const MySQL = require('../connections/mysql');
+import MySQL from '../connections/mysql';
 const Crypt = require('../services/crypt');
 const UserRepository = require('../repository/userRepository');
 
