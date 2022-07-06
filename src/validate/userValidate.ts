@@ -21,7 +21,7 @@ class UserValidate {
             return { err: "Name must be a string" }
         }
         if (value.length < 6) {
-            return { err: "Minimun 6 caracters" }
+            return { err: "Name must have minimun 6 caracters" }
         }
         return true;
     }
@@ -49,7 +49,7 @@ class UserValidate {
     }
 
     static isPassword(value: string) {
-        const password = /^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[$*&@#])[0-9a-zA-Z$*&@#]{6,}$/;
+        const password = /^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[$*&@#!/?\.])[0-9a-zA-Z$*&@!#?\.]{6,}$/;
         if (!value) {
             return { err: UserValidate.EMPTY_FIELD.replace("FIELD", "password") };
         }
@@ -59,7 +59,6 @@ class UserValidate {
         return true;
     }
 
-    //TODO - analytic with bera about this values can be type number
     static isType(value: string) {
         const type = /^\(?[1-2]\)?/
         if (!value) {

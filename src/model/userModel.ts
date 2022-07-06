@@ -130,6 +130,7 @@ class UserModel {
                 ;
             MySQL.query(emailExist, (err: Error, result: EmailExistResult[]) => {
                 if (err) return reject({ status_code: 500, result: err });
+                //TODO  - review validation email owen user and permission user
                 if (email === result.at(0)?.email && result.at(0)?.id_user == idUser) {
                     const updateUser = `
                             UPDATE user SET

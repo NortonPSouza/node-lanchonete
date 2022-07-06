@@ -8,11 +8,11 @@ mongoose.connect(MONGO_URI, {
     useFindAndModify: false,
     })
     .then(() =>  console.log({ success: "MongoDB Connected" }))
-    .catch((error) => {
+    .catch((error: Error) => {
         console.log("database Mongo connection failed. exiting now...");
         console.error(error);
         process.exit(1);
     }
 )
 
-module.exports = mongoose;
+export default mongoose;
